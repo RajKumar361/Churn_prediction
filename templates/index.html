@@ -129,7 +129,7 @@
           <option value="0">Not Active</option>
         </select>
 
-        <button type="submit">Predict Now</button>
+        <button type="submit" id="predictBtn">Predict Now</button>
       </form>
     </section>
 
@@ -160,16 +160,58 @@
             </span>
           </div>
         </div>
+        <button id="predictAnotherBtn" class="predict-another-btn">
+          Predict Another
+        </button>
       </div>
       {% endif %}
 
       <div class="stats-info">
         <p>Total Predictions: {{ total }}</p>
         <p>High Risk: {{ high }}</p>
-        <p>Medium Risk: {{ med }}</p>
+        <p>Medium Risk: {{ medium }}</p>
         <p>Low Risk: {{ low }}</p>
         <p>Average Probability: {{ avg_prob }}%</p>
       </div>
+
+      <!-- Prediction History -->
+      {% if all_predictions %}
+      <div class="prediction-history">
+        <h3>Prediction History</h3>
+        <div class="history-table-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Credit Score</th>
+                <th>Age</th>
+                <th>Country</th>
+                <th>Churn Probability</th>
+                <th>Risk Level</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in all_predictions %}
+              <tr class="risk-{{ record[13]|lower }}">
+                <td>{{ record[0] }}</td>
+                <td>{{ record[2] }}</td>
+                <td>{{ record[5] }}</td>
+                <td>{{ record[3] }}</td>
+                <td>{{ record[12] }}</td>
+                <td>
+                  {% if record[13] == 'High' %} 🔴 {{ record[13] }} {% elif
+                  record[13] == 'Medium' %} 🟡 {{ record[13] }} {% else %} 🟢 {{
+                  record[13] }} {% endif %}
+                </td>
+                <td>{{ record[14] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
     </section>
 
     <!-- ================= FOOTER ================= -->

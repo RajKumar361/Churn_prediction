@@ -398,6 +398,18 @@ button:hover {
   box-shadow: 0 0 25px rgba(56, 189, 248, 0.8);
 }
 
+.predict-another-btn {
+  margin-top: 25px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  padding: 14px 32px;
+  font-size: 1rem;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.predict-another-btn:hover {
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.8);
+}
+
 /* ============================
    INPUTS & FORMS
    ============================ */
@@ -530,4 +542,114 @@ p {
   padding: 20px;
   text-align: center;
   color: var(--text-muted);
+}
+
+/* ============================
+   STATS INFO & PREDICTION HISTORY
+   ============================ */
+
+.stats-info {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 30px;
+  background: var(--card-bg);
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.stats-info p {
+  background: rgba(56, 189, 248, 0.08);
+  padding: 15px;
+  border-radius: 12px;
+  border-left: 4px solid #38bdf8;
+  text-align: center;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+/* Prediction History Table */
+.prediction-history {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 30px;
+  background: var(--card-bg);
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.prediction-history h3 {
+  text-align: center;
+  margin-bottom: 25px;
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.7));
+}
+
+.history-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(2, 6, 23, 0.6);
+}
+
+.history-table thead {
+  background: rgba(56, 189, 248, 0.15);
+}
+
+.history-table th {
+  padding: 15px;
+  text-align: left;
+  color: #38bdf8;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+}
+
+.history-table td {
+  padding: 12px 15px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+.history-table tbody tr {
+  transition: 0.3s ease;
+}
+
+.history-table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.history-table tr.risk-high {
+  border-left: 4px solid rgba(220, 38, 38, 0.8);
+}
+
+.history-table tr.risk-high:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.history-table tr.risk-medium {
+  border-left: 4px solid rgba(217, 119, 6, 0.8);
+}
+
+.history-table tr.risk-medium:hover {
+  background: rgba(217, 119, 6, 0.08);
+}
+
+.history-table tr.risk-low {
+  border-left: 4px solid rgba(34, 197, 94, 0.8);
+}
+
+.history-table tr.risk-low:hover {
+  background: rgba(34, 197, 94, 0.08);
 }

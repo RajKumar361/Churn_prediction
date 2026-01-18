@@ -61,8 +61,13 @@ def index():
         high = len([r for r in records if r[13] == "High"]) if total else 0
         medium = len([r for r in records if r[13] == "Medium"]) if total else 0
         low = len([r for r in records if r[13] == "Low"]) if total else 0
+        
+        # Calculate average probability
+        probs = [float(r[12].rstrip('%')) for r in records if r[12]]
+        avg_prob = round(sum(probs) / len(probs), 2) if probs else 0
     except:
         total = high = medium = low = 0
+        avg_prob = 0
 
     return render_template(
         "index.html",
@@ -70,8 +75,10 @@ def index():
         high=high,
         medium=medium,
         low=low,
+        avg_prob=avg_prob,
         probability=None,
-        risk=None
+        risk=None,
+        all_predictions=[]
     )
 
 # ----------------------------
@@ -141,6 +148,10 @@ def predict():
         high = len([r for r in records if r[13] == "High"])
         medium = len([r for r in records if r[13] == "Medium"])
         low = len([r for r in records if r[13] == "Low"])
+        
+        # Calculate average probability
+        probs = [float(r[12].rstrip('%')) for r in records if r[12]]
+        avg_prob = round(sum(probs) / len(probs), 2) if probs else 0
 
         return render_template(
             "index.html",
@@ -149,7 +160,9 @@ def predict():
             total=total,
             high=high,
             medium=medium,
-            low=low
+            low=low,
+            avg_prob=avg_prob,
+            all_predictions=records
         )
 
     except Exception as e:
