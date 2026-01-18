@@ -5,7 +5,7 @@
     <title>Churn Prediction Dashboard</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="/Churn_Prediction/assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,7 +24,7 @@
     <section id="home" class="section">
       <img
         class="hero-img"
-        src="/Churn_Prediction/assets/images/dashboard.png"
+        src="assets/images/dashboard.png"
         alt="Dashboard Image"
       />
       <h1>Customer Churn Prediction System</h1>
@@ -69,60 +69,75 @@
             <li>Visualizes prediction trends using charts.</li>
           </ul>
         </div>
-        <img
-          src="/Churn_Prediction/assets/images/churn.png"
-          alt="Churn Prediction"
-        />
+        <img src="assets/images/churn.png" alt="Churn Prediction" />
       </div>
     </section>
 
     <!-- ================= PREDICTION FORM ================= -->
     <section id="predict" class="section">
       <h2>Predict Customer Churn</h2>
+      <p style="color: #94a3b8; margin-bottom: 20px">
+        Demo Version - Enter customer details to see prediction
+      </p>
 
-      <form action="/predict" method="POST" id="predictionForm">
+      <form id="predictionForm">
         <input
           type="number"
-          name="CreditScore"
+          id="CreditScore"
           placeholder="Credit Score"
+          value="650"
           required
         />
-        <input type="number" name="Age" placeholder="Age" required />
-        <input type="number" name="Tenure" placeholder="Tenure" required />
-        <input type="number" name="Balance" placeholder="Balance" required />
+        <input type="number" id="Age" placeholder="Age" value="42" required />
         <input
           type="number"
-          name="Product"
+          id="Tenure"
+          placeholder="Tenure"
+          value="2"
+          required
+        />
+        <input
+          type="number"
+          id="Balance"
+          placeholder="Balance"
+          value="0"
+          required
+        />
+        <input
+          type="number"
+          id="Product"
           placeholder="Number of Products"
+          value="1"
           required
         />
         <input
           type="number"
-          name="EstimatedSalary"
+          id="EstimatedSalary"
           placeholder="Estimated Salary"
+          value="75000"
           required
         />
 
-        <select name="Gender" required>
+        <select id="Gender" required>
           <option value="">Select Gender</option>
-          <option value="Male">Male</option>
+          <option value="Male" selected>Male</option>
           <option value="Female">Female</option>
         </select>
 
-        <select name="Country" required>
+        <select id="Country" required>
           <option value="">Select Country</option>
-          <option value="France">France</option>
+          <option value="France" selected>France</option>
           <option value="Germany">Germany</option>
           <option value="Spain">Spain</option>
         </select>
 
-        <select name="HasCrCard">
-          <option value="1">Has Credit Card</option>
+        <select id="HasCrCard">
+          <option value="1" selected>Has Credit Card</option>
           <option value="0">No Credit Card</option>
         </select>
 
-        <select name="IsActiveMember">
-          <option value="1">Active Member</option>
+        <select id="IsActiveMember">
+          <option value="1" selected>Active Member</option>
           <option value="0">Not Active</option>
         </select>
 
@@ -195,6 +210,45 @@
     <!-- ================= CHART SCRIPT ================= -->
     <script>
       let chartInstance = null;
+      let predictions = [];
+
+      // Simple prediction simulation
+      function simulatePrediction(data) {
+        // Simple heuristic for demo
+        let score = 0;
+
+        // Age factor
+        if (data.Age > 50) score += 20;
+        else if (data.Age > 40) score += 15;
+
+        // Tenure factor
+        if (data.Tenure < 2) score += 25;
+        else if (data.Tenure < 5) score += 15;
+
+        // Balance factor
+        if (data.Balance === 0) score += 15;
+
+        // Product factor
+        if (data.Product === 1) score += 10;
+
+        // Credit score factor
+        if (data.CreditScore < 600) score += 20;
+        else if (data.CreditScore < 700) score += 10;
+
+        // Active member factor
+        if (data.IsActiveMember === 0) score += 20;
+
+        // Add some randomness for demo
+        score = Math.min(100, Math.max(0, score + (Math.random() * 10 - 5)));
+
+        return Math.round(score);
+      }
+
+      function getRiskLevel(probability) {
+        if (probability >= 70) return "High";
+        if (probability >= 40) return "Medium";
+        return "Low";
+      }
 
       // Handle form submission
       document
@@ -202,72 +256,77 @@
         .addEventListener("submit", function (e) {
           e.preventDefault();
 
-          const formData = new FormData(this);
           const data = {
-            CreditScore: parseFloat(formData.get("CreditScore")),
-            Age: parseFloat(formData.get("Age")),
-            Tenure: parseFloat(formData.get("Tenure")),
-            Balance: parseFloat(formData.get("Balance")),
-            Product: parseFloat(formData.get("Product")),
-            EstimatedSalary: parseFloat(formData.get("EstimatedSalary")),
-            Gender: formData.get("Gender"),
-            Country: formData.get("Country"),
-            HasCrCard: parseInt(formData.get("HasCrCard")),
-            IsActiveMember: parseInt(formData.get("IsActiveMember")),
+            CreditScore: parseFloat(
+              document.getElementById("CreditScore").value,
+            ),
+            Age: parseFloat(document.getElementById("Age").value),
+            Tenure: parseFloat(document.getElementById("Tenure").value),
+            Balance: parseFloat(document.getElementById("Balance").value),
+            Product: parseFloat(document.getElementById("Product").value),
+            EstimatedSalary: parseFloat(
+              document.getElementById("EstimatedSalary").value,
+            ),
+            Gender: document.getElementById("Gender").value,
+            Country: document.getElementById("Country").value,
+            HasCrCard: parseInt(document.getElementById("HasCrCard").value),
+            IsActiveMember: parseInt(
+              document.getElementById("IsActiveMember").value,
+            ),
           };
 
-          // Send to backend
-          fetch("/predict", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          })
-            .then((response) => response.json())
-            .then((result) => {
-              document.getElementById("probabilityValue").textContent =
-                result.probability + "%";
+          // Simulate prediction
+          const probability = simulatePrediction(data);
+          const risk = getRiskLevel(probability);
 
-              const riskCard = document.getElementById("riskCard");
-              const riskValue = document.getElementById("riskValue");
+          // Add to predictions
+          predictions.push({ probability, risk });
 
-              // Remove previous classes
-              riskCard.classList.remove("risk-high", "risk-medium", "risk-low");
+          // Update display
+          document.getElementById("probabilityValue").textContent =
+            probability + "%";
 
-              if (result.risk === "High") {
-                riskCard.classList.add("risk-high");
-                riskValue.textContent = "🔴 HIGH RISK";
-              } else if (result.risk === "Medium") {
-                riskCard.classList.add("risk-medium");
-                riskValue.textContent = "🟡 MEDIUM RISK";
-              } else {
-                riskCard.classList.add("risk-low");
-                riskValue.textContent = "🟢 LOW RISK";
-              }
+          const riskCard = document.getElementById("riskCard");
+          const riskValue = document.getElementById("riskValue");
 
-              document.getElementById("predictionResult").style.display =
-                "block";
-              updateStats(result);
+          // Remove previous classes
+          riskCard.classList.remove("risk-high", "risk-medium", "risk-low");
 
-              // Scroll to stats
-              document
-                .getElementById("stats")
-                .scrollIntoView({ behavior: "smooth" });
-            })
-            .catch((error) => console.error("Error:", error));
+          if (risk === "High") {
+            riskCard.classList.add("risk-high");
+            riskValue.textContent = "🔴 HIGH RISK";
+          } else if (risk === "Medium") {
+            riskCard.classList.add("risk-medium");
+            riskValue.textContent = "🟡 MEDIUM RISK";
+          } else {
+            riskCard.classList.add("risk-low");
+            riskValue.textContent = "🟢 LOW RISK";
+          }
+
+          document.getElementById("predictionResult").style.display = "block";
+          updateStats();
+
+          // Scroll to stats
+          document
+            .getElementById("stats")
+            .scrollIntoView({ behavior: "smooth" });
         });
 
-      function updateStats(data) {
-        document.getElementById("totalCount").textContent = data.total || 0;
-        document.getElementById("highCount").textContent = data.high || 0;
-        document.getElementById("mediumCount").textContent = data.medium || 0;
-        document.getElementById("lowCount").textContent = data.low || 0;
+      function updateStats() {
+        const total = predictions.length;
+        const high = predictions.filter((p) => p.risk === "High").length;
+        const medium = predictions.filter((p) => p.risk === "Medium").length;
+        const low = predictions.filter((p) => p.risk === "Low").length;
 
-        updateChart(data);
+        document.getElementById("totalCount").textContent = total;
+        document.getElementById("highCount").textContent = high;
+        document.getElementById("mediumCount").textContent = medium;
+        document.getElementById("lowCount").textContent = low;
+
+        updateChart(high, medium, low);
       }
 
-      function updateChart(data) {
+      function updateChart(high, medium, low) {
         const ctx = document.getElementById("riskChart").getContext("2d");
 
         const chartData = {
@@ -275,7 +334,7 @@
           datasets: [
             {
               label: "Churn Risk Distribution",
-              data: [data.high || 0, data.medium || 0, data.low || 0],
+              data: [high, medium, low],
               borderWidth: 1,
               backgroundColor: [
                 "rgba(220, 38, 38, 0.7)",
@@ -333,7 +392,7 @@
 
       // Initialize chart on page load
       window.addEventListener("load", function () {
-        updateChart({ high: 0, medium: 0, low: 0 });
+        updateChart(0, 0, 0);
       });
     </script>
   </body>
