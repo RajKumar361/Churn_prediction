@@ -5,10 +5,7 @@
     <title>Churn Prediction Dashboard</title>
 
     <!-- CSS -->
-    <link
-      rel="stylesheet"
-      href="./assets/css/style.css"
-    />
+    <link rel="stylesheet" href="/Churn_Prediction/assets/css/style.css" />
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -27,7 +24,7 @@
     <section id="home" class="section">
       <img
         class="hero-img"
-        src="./assets/images/dashboard.png"
+        src="/Churn_Prediction/assets/images/dashboard.png"
         alt="Dashboard Image"
       />
       <h1>Customer Churn Prediction System</h1>
@@ -73,7 +70,7 @@
           </ul>
         </div>
         <img
-          src="./assets/images/churn.png"
+          src="/Churn_Prediction/assets/images/churn.png"
           alt="Churn Prediction"
         />
       </div>
@@ -142,20 +139,20 @@
       </div>
 
       <!-- Latest Prediction Result -->
-      <div class="latest-prediction" id="predictionResult" style="display: none;">
+      <div
+        class="latest-prediction"
+        id="predictionResult"
+        style="display: none"
+      >
         <h3>Latest Prediction Result</h3>
         <div class="prediction-result">
           <div class="result-card">
             <span class="result-label">Churn Probability:</span>
             <span class="result-value" id="probabilityValue">-</span>
           </div>
-          <div
-            class="result-card" id="riskCard"
-          >
+          <div class="result-card" id="riskCard">
             <span class="result-label">Risk Level:</span>
-            <span class="result-value" id="riskValue">
-              -
-            </span>
+            <span class="result-value" id="riskValue"> - </span>
           </div>
         </div>
       </div>
@@ -200,90 +197,98 @@
       let chartInstance = null;
 
       // Handle form submission
-      document.getElementById('predictionForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const data = {
-          CreditScore: parseFloat(formData.get('CreditScore')),
-          Age: parseFloat(formData.get('Age')),
-          Tenure: parseFloat(formData.get('Tenure')),
-          Balance: parseFloat(formData.get('Balance')),
-          Product: parseFloat(formData.get('Product')),
-          EstimatedSalary: parseFloat(formData.get('EstimatedSalary')),
-          Gender: formData.get('Gender'),
-          Country: formData.get('Country'),
-          HasCrCard: parseInt(formData.get('HasCrCard')),
-          IsActiveMember: parseInt(formData.get('IsActiveMember'))
-        };
+      document
+        .getElementById("predictionForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
 
-        // Send to backend
-        fetch('/predict', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-          document.getElementById('probabilityValue').textContent = result.probability + '%';
-          
-          const riskCard = document.getElementById('riskCard');
-          const riskValue = document.getElementById('riskValue');
-          
-          // Remove previous classes
-          riskCard.classList.remove('risk-high', 'risk-medium', 'risk-low');
-          
-          if (result.risk === 'High') {
-            riskCard.classList.add('risk-high');
-            riskValue.textContent = '🔴 HIGH RISK';
-          } else if (result.risk === 'Medium') {
-            riskCard.classList.add('risk-medium');
-            riskValue.textContent = '🟡 MEDIUM RISK';
-          } else {
-            riskCard.classList.add('risk-low');
-            riskValue.textContent = '🟢 LOW RISK';
-          }
-          
-          document.getElementById('predictionResult').style.display = 'block';
-          updateStats(result);
-          
-          // Scroll to stats
-          document.getElementById('stats').scrollIntoView({ behavior: 'smooth' });
-        })
-        .catch(error => console.error('Error:', error));
-      });
+          const formData = new FormData(this);
+          const data = {
+            CreditScore: parseFloat(formData.get("CreditScore")),
+            Age: parseFloat(formData.get("Age")),
+            Tenure: parseFloat(formData.get("Tenure")),
+            Balance: parseFloat(formData.get("Balance")),
+            Product: parseFloat(formData.get("Product")),
+            EstimatedSalary: parseFloat(formData.get("EstimatedSalary")),
+            Gender: formData.get("Gender"),
+            Country: formData.get("Country"),
+            HasCrCard: parseInt(formData.get("HasCrCard")),
+            IsActiveMember: parseInt(formData.get("IsActiveMember")),
+          };
+
+          // Send to backend
+          fetch("/predict", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((result) => {
+              document.getElementById("probabilityValue").textContent =
+                result.probability + "%";
+
+              const riskCard = document.getElementById("riskCard");
+              const riskValue = document.getElementById("riskValue");
+
+              // Remove previous classes
+              riskCard.classList.remove("risk-high", "risk-medium", "risk-low");
+
+              if (result.risk === "High") {
+                riskCard.classList.add("risk-high");
+                riskValue.textContent = "🔴 HIGH RISK";
+              } else if (result.risk === "Medium") {
+                riskCard.classList.add("risk-medium");
+                riskValue.textContent = "🟡 MEDIUM RISK";
+              } else {
+                riskCard.classList.add("risk-low");
+                riskValue.textContent = "🟢 LOW RISK";
+              }
+
+              document.getElementById("predictionResult").style.display =
+                "block";
+              updateStats(result);
+
+              // Scroll to stats
+              document
+                .getElementById("stats")
+                .scrollIntoView({ behavior: "smooth" });
+            })
+            .catch((error) => console.error("Error:", error));
+        });
 
       function updateStats(data) {
-        document.getElementById('totalCount').textContent = data.total || 0;
-        document.getElementById('highCount').textContent = data.high || 0;
-        document.getElementById('mediumCount').textContent = data.medium || 0;
-        document.getElementById('lowCount').textContent = data.low || 0;
-        
+        document.getElementById("totalCount").textContent = data.total || 0;
+        document.getElementById("highCount").textContent = data.high || 0;
+        document.getElementById("mediumCount").textContent = data.medium || 0;
+        document.getElementById("lowCount").textContent = data.low || 0;
+
         updateChart(data);
       }
 
       function updateChart(data) {
-        const ctx = document.getElementById('riskChart').getContext('2d');
-        
+        const ctx = document.getElementById("riskChart").getContext("2d");
+
         const chartData = {
-          labels: ['High Risk', 'Medium Risk', 'Low Risk'],
-          datasets: [{
-            label: 'Churn Risk Distribution',
-            data: [data.high || 0, data.medium || 0, data.low || 0],
-            borderWidth: 1,
-            backgroundColor: [
-              'rgba(220, 38, 38, 0.7)',
-              'rgba(217, 119, 6, 0.7)',
-              'rgba(34, 197, 94, 0.7)'
-            ],
-            borderColor: [
-              'rgba(220, 38, 38, 1)',
-              'rgba(217, 119, 6, 1)',
-              'rgba(34, 197, 94, 1)'
-            ]
-          }]
+          labels: ["High Risk", "Medium Risk", "Low Risk"],
+          datasets: [
+            {
+              label: "Churn Risk Distribution",
+              data: [data.high || 0, data.medium || 0, data.low || 0],
+              borderWidth: 1,
+              backgroundColor: [
+                "rgba(220, 38, 38, 0.7)",
+                "rgba(217, 119, 6, 0.7)",
+                "rgba(34, 197, 94, 0.7)",
+              ],
+              borderColor: [
+                "rgba(220, 38, 38, 1)",
+                "rgba(217, 119, 6, 1)",
+                "rgba(34, 197, 94, 1)",
+              ],
+            },
+          ],
         };
 
         if (chartInstance) {
@@ -291,7 +296,7 @@
           chartInstance.update();
         } else {
           chartInstance = new Chart(ctx, {
-            type: 'bar',
+            type: "bar",
             data: chartData,
             options: {
               responsive: true,
@@ -299,35 +304,35 @@
               plugins: {
                 legend: {
                   labels: {
-                    color: '#e2e8f0'
-                  }
-                }
+                    color: "#e2e8f0",
+                  },
+                },
               },
               scales: {
                 y: {
                   ticks: {
-                    color: '#e2e8f0'
+                    color: "#e2e8f0",
                   },
                   grid: {
-                    color: 'rgba(56, 189, 248, 0.1)'
-                  }
+                    color: "rgba(56, 189, 248, 0.1)",
+                  },
                 },
                 x: {
                   ticks: {
-                    color: '#e2e8f0'
+                    color: "#e2e8f0",
                   },
                   grid: {
-                    color: 'rgba(56, 189, 248, 0.1)'
-                  }
-                }
-              }
-            }
+                    color: "rgba(56, 189, 248, 0.1)",
+                  },
+                },
+              },
+            },
           });
         }
       }
 
       // Initialize chart on page load
-      window.addEventListener('load', function() {
+      window.addEventListener("load", function () {
         updateChart({ high: 0, medium: 0, low: 0 });
       });
     </script>
